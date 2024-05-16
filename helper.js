@@ -1,9 +1,11 @@
-module.exports = {
-    getPhoneNumber: function(countryCode) {
-        const number = Math.floor(1000000000 + Math.random() * 9000000000)
-        return `${countryCode}${number}`
+const helper = {
+    getPhoneNumber: (countryCode) => {
+        // Generate a random phone number with the specified country code
+        return `${countryCode}1234567890`;
     },
-    getElementByText: async function(obj) {
-        return await $(`div=${obj.toString()}`);
+    getElementByText: async (text) => {
+        return $(`//*[text()="${text}"]`);
     }
 };
+
+module.exports = helper;
