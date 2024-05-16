@@ -1,0 +1,180 @@
+Open Terminal, Create Sprint 8 Project (S8P)
+Git Clone (git@github.com:Lino2109/hm08-qa-us.git)
+npm install to work with project locally
+Started Server for Urban Routs and replaced wdio.config.js base url
+Following reuirements were tested: 
+etting the address
+Selecting Supportive plan
+Filling in the phone number
+Adding a credit card.
+Writing a message for the driver
+Ordering a Blanket and handkerchiefs.
+Ordering 2 Ice creams
+The car search modal appears
+Waiting for the driver info to appear in the modal
+Used the following codes to run Automated test for the prior stated Requirements for creating an order:
+const page = require('../page');
+const helper = require('../helper');
+
+describe('Create an order', () => {
+    beforeEach(async () => {
+        await browser.url('https://cnt-d2be8471-f420-4bce-bc43-7e4e8112fec3.containerhub.tripleten-services.com/');
+    });
+
+    it('should set the address', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        const pickupInput = await $('//input[@name="pickup"]');
+        const dropoffInput = await $('//input[@name="dropoff"]');
+        await expect(pickupInput).toHaveValue('East 2nd Street, 601');
+        await expect(dropoffInput).toHaveValue('1300 1st St');
+    });
+
+    it('should open phone number modal', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        const phoneNumberButton = await $(page.phoneNumberButtonXPath);
+        await phoneNumberButton.waitForDisplayed();
+        await phoneNumberButton.click();
+        const phoneNumberModal = await $(page.phoneNumberModalXPath);
+        await expect(phoneNumberModal).toBeExisting();
+    });
+
+    it('should save the phone', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        const phoneNumber = helper.getPhoneNumber("+1");
+        await page.submitPhoneNumber(phoneNumber);
+        const phoneNumberElement = await helper.getElementByText(phoneNumber);
+        await expect(phoneNumberElement).toBeExisting();
+    });
+
+    it('should select Supportive plan', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.selectPlan('Supportive');
+        const selectedPlan = await $(`//button[text()="Supportive"][@class="selected"]`);
+        await expect(selectedPlan).toBeExisting();
+    });
+
+    it('should add a credit card', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.openCreditCardModal();
+        await page.fillCreditCardDetails('1234567890123456', '12/25', '123');
+        await page.clickAway();
+        const linkedCard = await $('//div[contains(text(), "Card ending in 3456")]');
+        await expect(linkedCard).toBeExisting();
+    });
+
+    it('should write a message for the driver', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        const message = "Please arrive 10 minutes early.";
+        await page.writeMessageForDriver(message);
+        const messageInput = await $('//textarea[@id="driverMessage"]');
+        await expect(messageInput).toHaveValue(message);
+    });
+
+    it('should order a Blanket and handkerchiefs', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.orderBlanketAndHandkerchiefs();
+        const orderStatus = await $('//div[contains(text(), "Blanket and handkerchiefs ordered")]');
+        await expect(orderStatus).toBeExisting();
+    });
+
+    it('should order 2 Ice creams', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.orderIceCreams(2);
+        const orderStatus = await $('//div[contains(text(), "2 Ice creams ordered")]');
+        await expect(orderStatus).toBeExisting();
+    });
+
+    it('should display car search modal', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.waitForCarSearchModal();
+        const carSearchModal = await $('//div[@id="carSearchModal"]');
+        await expect(carSearchModal).toBeExisting();
+    });
+
+    // Optional: Wait for driver info to appear in the modal
+    it('should display driver info in car search modal', async () => {
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.waitForCarSearchModal();
+        const driverInfo = await $('//div[@id="driverInfo"]');
+        await driverInfo.waitForDisplayed();
+        await expect(driverInfo).toBeExisting();
+    });
+});
+
+The following code was used for page.js:
+
+const page = {
+    fillAddresses: async (pickup, dropoff) => {
+        const pickupInput = await $('//input[@name="pickup"]');
+        await pickupInput.setValue(pickup);
+        const dropoffInput = await $('//input[@name="dropoff"]');
+        await dropoffInput.setValue(dropoff);
+    },
+    phoneNumberButtonXPath: '//button[@id="phoneNumberButton"]',
+    phoneNumberModalXPath: '//div[@id="phoneNumberModal"]',
+    submitPhoneNumber: async (phoneNumber) => {
+        const phoneInput = await $('//input[@name="phone"]');
+        await phoneInput.setValue(phoneNumber);
+        const submitButton = await $('//button[@id="submitPhoneNumber"]');
+        await submitButton.click();
+    },
+    selectPlan: async (plan) => {
+        const planButton = await $(`//button[text()="${plan}"]`);
+        await planButton.click();
+    },
+    openCreditCardModal: async () => {
+        const addCardButton = await $('//button[@id="addCreditCard"]');
+        await addCardButton.click();
+    },
+    fillCreditCardDetails: async (number, expiry, cvv) => {
+        const numberInput = await $('//input[@id="cardNumber"]');
+        await numberInput.setValue(number);
+        const expiryInput = await $('//input[@id="expiryDate"]');
+        await expiryInput.setValue(expiry);
+        const cvvInput = await $('//input[@id="code"]');
+        await cvvInput.setValue(cvv);
+        await cvvInput.keys('Tab'); // Simulate TAB key press
+    },
+    clickAway: async () => {
+        const body = await $('//body');
+        await body.click();
+    },
+    writeMessageForDriver: async (message) => {
+        const messageInput = await $('//textarea[@id="driverMessage"]');
+        await messageInput.setValue(message);
+    },
+    orderBlanketAndHandkerchiefs: async () => {
+        const orderButton = await $('//button[@id="orderBlanket"]');
+        await orderButton.click();
+    },
+    orderIceCreams: async (quantity) => {
+        const iceCreamInput = await $('//input[@id="iceCreamQuantity"]');
+        await iceCreamInput.setValue(quantity);
+        const orderButton = await $('//button[@id="orderIceCream"]');
+        await orderButton.click();
+    },
+    waitForCarSearchModal: async () => {
+        const carSearchModal = await $('//div[@id="carSearchModal"]');
+        await carSearchModal.waitForDisplayed();
+    }
+};
+
+module.exports = page;
+
+
+Lastly the following code was used for helper.js:
+
+const helper = {
+    getPhoneNumber: (countryCode) => {
+        // Generate a random phone number with the specified country code
+        return `${countryCode}1234567890`;
+    },
+    getElementByText: async (text) => {
+        return $(`//*[text()="${text}"]`);
+    }
+};
+
+module.exports = helper;
+Automation testing compleeted and submitted.
+
+resources used: TripleTen exmples and provided codes. TripleTen discord Chat and older archives. TripleTen video explinations and examples (Tutor: Ullyana video). Youtube Examples
