@@ -1,5 +1,3 @@
-createAnOrder.e2e.js.AI
-
 const page = require('../../page');
 const helper = require('../../helper');
 
