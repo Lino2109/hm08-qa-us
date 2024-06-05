@@ -1,9 +1,10 @@
-Open Terminal, Create Sprint 8 Project (S8P)
-Git Clone (git@github.com:Lino2109/hm08-qa-us.git)
-npm install to work with project locally
-Started Server for Urban Routs and replaced wdio.config.js base url
-Following reuirements were tested: 
-etting the address
+Project Name : Create An Order
+Discription: We are to create an Order using the provided Urban Routs website, and run Automated test's to verify all requirments are functionally properly.
+Disc. Technologies used: We will conduction Automated testing using WebDriverIO and utilizing Firefox as the web browser.
+Techniques Used and How to use the: 
+
+---Following requirements were tested---
+Setting the address
 Selecting Supportive plan
 Filling in the phone number
 Adding a credit card.
@@ -11,8 +12,12 @@ Writing a message for the driver
 Ordering a Blanket and handkerchiefs.
 Ordering 2 Ice creams
 The car search modal appears
-Waiting for the driver info to appear in the modal
-Used the following codes to run Automated test for the prior stated Requirements for creating an order:
+
+We will utilize VS Code to write and conduct our code.
+We already establish WebDriver IO to the terminal.
+we will have 4 categories( createAnOrdere2e.js, helper.js, page.js, wdio.conf.js)
+First Category we will use the following code to write our test for the previous stated requiremnts.
+
 const page = require('../../page');
 const helper = require('../../helper');
 
@@ -26,6 +31,8 @@ describe('Create an order', () => {
         const pnoneNumberModal = await $(page.phoneNumberModal);
     //    await expect(pnoneNumberModal).toBeExisting();
     })
+(This test is to establish opening the website, and filling in the various fields and click on the various buttons (phone number,address,) we establish that with locators from the websit itsself and places in page.js(look for page.js for locators.
+
 
     it('should save the phone', async () => {
         await browser.url(`/`)
@@ -35,6 +42,7 @@ describe('Create an order', () => {
         const phoneNumberElement = await helper.getElementByText(phoneNumber);
         await expect(phoneNumberElement).toBeExisting();
     })
+(This test the abilitty to save the phone number to the account)
 
     it('should select supportive plan', async () => {
         await browser.url('/')
@@ -44,6 +52,7 @@ describe('Create an order', () => {
         await supportivePlanButton.click();
       //  await expect(supportivePlanButton).toHaveAttributeContaining('class', 'selected');
     })
+(This Test that the selection of the Supportive plan is true)
 
      it('should fill phone number and submit', async () => {
          await browser.url('/')
@@ -54,20 +63,21 @@ describe('Create an order', () => {
          const phoneNumber = helper.getPhoneNumber("+1");
 //        await page.submitPhoneNumber(phoneNumber);
      })
+(This test that the phone number field is filled and submitted)
 
      it('should add new card', async () => {
         await browser.url('/');
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
         await page.fillCardDetails("123456789101","14");
      })
-     
+ (This test the addition of a new card)    
 
      it('should enter card details and CVV', async () => {
          await browser.url('/')
          await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
          await page.fillCardDetails("123456789101","14");
      })
-    
+(This test filling our card information)
     
      it('should enter message for driver', async () => {
         await browser.url('/');
@@ -77,7 +87,9 @@ describe('Create an order', () => {
         const enterMessageForDriver = await $(page.messageField);
         await expect(enterMessageForDriver).toHaveValue(message);
     });
-    
+
+(This test that the ability to send a message is possible)
+
    it('should order blanket and handkerchief', async () => {
     await browser.url('/');
     await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
@@ -85,12 +97,15 @@ describe('Create an order', () => {
     await expect($(page.orderBlanketAndHanderchiefstatus)).toBeChecked();
 });
 
+(This test the ordering of a Blanket & Handkerchief is done)
+
      it('should order 2 ice creams', async () => {
          await browser.url('/')
          await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
          await page.iceCreamSelect();
         expect($(page.iceCreamValue)).toHaveValue(2);
  });
+(This test the ability to order 2 ice Creams)
 
      it('should display car search modal', async () => {
          await browser.url('/')
@@ -104,10 +119,11 @@ describe('Create an order', () => {
          await carSearchModal.waitForDisplayed();
 //         expect($(page.carSearchModal)).toBeDisplayed();
      });
+(This test that the car search display populate's)
 
 })
 
-The following code was used for page.js:
+The following code was used for page.js which houses the locators for the test:
 
 module.exports = {
     // Inputs
@@ -216,7 +232,7 @@ module.exports = {
     },
 };
 
-The following code was used for helper.js:
+The following code was used for helper.js which helps auto populate number (Via: phone number, card number and Cvv code):
 
 module.exports = {
     getPhoneNumber: function(countryCode) {
@@ -227,289 +243,43 @@ module.exports = {
         return await $(`div=${obj.toString()}`);
     }
 };
-Lastly the Following code used for wdio.conf.js:
+
+Lastly the Following code used for wdio.conf.js which is our connector to the website and the webDriverI/O program:
 
 exports.config = {
-    //
-    // ====================
-    // Runner Configuration
-    // ====================
-    // WebdriverIO supports running e2e tests as well as unit and component tests.
     runner: 'local',
-    //
-    // ==================
-    // Specify Test Files
-    // ==================
-    // Define which test specs should run. The pattern is relative to the directory
-    // of the configuration file being run.
-    //
-    // The specs are defined as an array of spec files (optionally using wildcards
-    // that will be expanded). The test for each spec file will be run in a separate
-    // worker process. In order to have a group of spec files run in the same worker
-    // process simply enclose them in an array within the specs array.
-    //
-    // If you are calling `wdio` from an NPM script (see https://docs.npmjs.com/cli/run-script),
-    // then the current working directory is where your `package.json` resides, so `wdio`
-    // will be called from there.
-    //
     specs: [
-        './test/specs/**/*.js'
+        './test/specs/*/.js'
     ],
-    // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
     ],
-    //
-    // ============
-    // Capabilities
-    // ============
-    // Define your capabilities here. WebdriverIO can run multiple capabilities at the same
-    // time. Depending on the number of capabilities, WebdriverIO launches several test
-    // sessions. Within your capabilities you can overwrite the spec and exclude options in
-    // order to group specific specs to a specific capability.
-    //
-    // First, you can define how many instances should be started at the same time. Let's
-    // say you have 3 different capabilities (Chrome, Firefox, and Safari) and you have
-    // set maxInstances to 1; wdio will spawn 3 processes. Therefore, if you have 10 spec
-    // files and you set maxInstances to 10, all spec files will get tested at the same time
-    // and 30 processes will get spawned. The property handles how many capabilities
-    // from the same test should run tests.
-    //
     maxInstances: 10,
-    //
-    // If you have trouble getting all important capabilities together, check out the
-    // Sauce Labs platform configurator - a great tool to configure your capabilities:
-    // https://saucelabs.com/platform/platform-configurator
-    //
-    capabilities: [{
-     
-        browserName: 'firefox'
-    }],
-
-    //
-    // ===================
-    // Test Configurations
-    // ===================
-    // Define all options that are relevant for the WebdriverIO instance here
-    //
-    // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: 'info',
-    //
-    // Set specific log levels per logger
-    // loggers:
-    // - webdriver, webdriverio
-    // - @wdio/browserstack-service, @wdio/devtools-service, @wdio/sauce-service
-    // - @wdio/mocha-framework, @wdio/jasmine-framework
-    // - @wdio/local-runner
-    // - @wdio/sumologic-reporter
-    // - @wdio/cli, @wdio/config, @wdio/utils
-    // Level of logging verbosity: trace | debug | info | warn | error | silent
-    // logLevels: {
-    //     webdriver: 'info',
-    //     '@wdio/appium-service': 'info'
-    // },
-    //
-    // If you only want to run your tests until a specific amount of tests have failed use
-    // bail (default is 0 - don't bail, run all tests).
+    headless: true,
+    capabilities: [
+    {
+        maxInstances: 5,
+        browserName: 'firefox',
+        acceptInsecureCerts: true,
+        'moz:firefoxOptions': {
+            //args: ['-headless']
+        }
+    }
+],
+    logLevel: 'error',
     bail: 0,
-    //
-    // Set a base URL in order to shorten url command calls. If your `url` parameter starts
-    // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
-    // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
-    // gets prepended directly.
-    baseUrl: 'https://cnt-422a0006-141a-45a4-984c-c695ab79188d.containerhub.tripleten-services.com',
-    //
-    // Default timeout for all waitFor* commands.
+    baseUrl: 'https://cnt-d920ee4b-2ba6-44af-a875-297d10b1f6ab.containerhub.tripleten-services.com',
     waitforTimeout: 10000,
-    //
-    // Default timeout in milliseconds for request
-    // if browser driver or grid doesn't send response
     connectionRetryTimeout: 120000,
-    //
-    // Default request retries count
     connectionRetryCount: 3,
-    //
-    // Test runner services
-    // Services take over a specific job you don't want to take care of. They enhance
-    // your test setup with almost no effort. Unlike plugins, they don't add new
-    // commands. Instead, they hook themselves up into the test process.
-     services: ['intercept'],
-    //
-    // Framework you want to run your specs with.
-    // The following are supported: Mocha, Jasmine, and Cucumber
-    // see also: https://webdriver.io/docs/frameworks
-    //
-    // Make sure you have the wdio adapter package for the specific framework installed
-    // before running any tests.
+    services: [ 
+        'geckodriver', 
+        'intercept', 
+    ],
     framework: 'mocha',
-    //
-    // The number of times to retry the entire specfile when it fails as a whole
-    // specFileRetries: 1,
-    //
-    // Delay in seconds between the spec file retry attempts
-    // specFileRetriesDelay: 0,
-    //
-    // Whether or not retried spec files should be retried immediately or deferred to the end of the queue
-    // specFileRetriesDeferred: false,
-    //
-    // Test reporter for stdout.
-    // The only one supported by default is 'dot'
-    // see also: https://webdriver.io/docs/dot-reporter
     reporters: ['spec'],
-
-    
-    //
-    // Options to be passed to Mocha.
-    // See the full list at http://mochajs.org/
     mochaOpts: {
         ui: 'bdd',
         timeout: 60000
     },
-    //
-    // =====
-    // Hooks
-    // =====
-    // WebdriverIO provides several hooks you can use to interfere with the test process in order to enhance
-    // it and to build services around it. You can either apply a single function or an array of
-    // methods to it. If one of them returns with a promise, WebdriverIO will wait until that promise got
-    // resolved to continue.
-    /**
-     * Gets executed once before all workers get launched.
-     * @param {object} config wdio configuration object
-     * @param {Array.<Object>} capabilities list of capabilities details
-     */
-    // onPrepare: function (config, capabilities) {
-    // },
-    /**
-     * Gets executed before a worker process is spawned and can be used to initialise specific service
-     * for that worker as well as modify runtime environments in an async fashion.
-     * @param  {string} cid      capability id (e.g 0-0)
-     * @param  {object} caps     object containing capabilities for session that will be spawn in the worker
-     * @param  {object} specs    specs to be run in the worker process
-     * @param  {object} args     object that will be merged with the main configuration once worker is initialized
-     * @param  {object} execArgv list of string arguments passed to the worker process
-     */
-    // onWorkerStart: function (cid, caps, specs, args, execArgv) {
-    // },
-    /**
-     * Gets executed just after a worker process has exited.
-     * @param  {string} cid      capability id (e.g 0-0)
-     * @param  {number} exitCode 0 - success, 1 - fail
-     * @param  {object} specs    specs to be run in the worker process
-     * @param  {number} retries  number of retries used
-     */
-    // onWorkerEnd: function (cid, exitCode, specs, retries) {
-    // },
-    /**
-     * Gets executed just before initialising the webdriver session and test framework. It allows you
-     * to manipulate configurations depending on the capability or spec.
-     * @param {object} config wdio configuration object
-     * @param {Array.<Object>} capabilities list of capabilities details
-     * @param {Array.<String>} specs List of spec file paths that are to be run
-     * @param {string} cid worker id (e.g. 0-0)
-     */
-    // beforeSession: function (config, capabilities, specs, cid) {
-    // },
-    /**
-     * Gets executed before test execution begins. At this point you can access to all global
-     * variables like `browser`. It is the perfect place to define custom commands.
-     * @param {Array.<Object>} capabilities list of capabilities details
-     * @param {Array.<String>} specs        List of spec file paths that are to be run
-     * @param {object}         browser      instance of created browser/device session
-     */
-    // before: function (capabilities, specs) {
-    // },
-    /**
-     * Runs before a WebdriverIO command gets executed.
-     * @param {string} commandName hook command name
-     * @param {Array} args arguments that command would receive
-     */
-    // beforeCommand: function (commandName, args) {
-    // },
-    /**
-     * Hook that gets executed before the suite starts
-     * @param {object} suite suite details
-     */
-    // beforeSuite: function (suite) {
-    // },
-    /**
-     * Function to be executed before a test (in Mocha/Jasmine) starts.
-     */
-    // beforeTest: function (test, context) {
-    // },
-    /**
-     * Hook that gets executed _before_ a hook within the suite starts (e.g. runs before calling
-     * beforeEach in Mocha)
-     */
-    // beforeHook: function (test, context) {
-    // },
-    /**
-     * Hook that gets executed _after_ a hook within the suite starts (e.g. runs after calling
-     * afterEach in Mocha)
-     */
-    // afterHook: function (test, context, { error, result, duration, passed, retries }) {
-    // },
-    /**
-     * Function to be executed after a test (in Mocha/Jasmine only)
-     * @param {object}  test             test object
-     * @param {object}  context          scope object the test was executed with
-     * @param {Error}   result.error     error object in case the test fails, otherwise `undefined`
-     * @param {*}       result.result    return object of test function
-     * @param {number}  result.duration  duration of test
-     * @param {boolean} result.passed    true if test has passed, otherwise false
-     * @param {object}  result.retries   informations to spec related retries, e.g. `{ attempts: 0, limit: 0 }`
-     */
-    // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-    // },
-
-
-    /**
-     * Hook that gets executed after the suite has ended
-     * @param {object} suite suite details
-     */
-    // afterSuite: function (suite) {
-    // },
-    /**
-     * Runs after a WebdriverIO command gets executed
-     * @param {string} commandName hook command name
-     * @param {Array} args arguments that command would receive
-     * @param {number} result 0 - command success, 1 - command error
-     * @param {object} error error object if any
-     */
-    // afterCommand: function (commandName, args, result, error) {
-    // },
-    /**
-     * Gets executed after all tests are done. You still have access to all global variables from
-     * the test.
-     * @param {number} result 0 - test pass, 1 - test fail
-     * @param {Array.<Object>} capabilities list of capabilities details
-     * @param {Array.<String>} specs List of spec file paths that ran
-     */
-    // after: function (result, capabilities, specs) {
-    // },
-    /**
-     * Gets executed right after terminating the webdriver session.
-     * @param {object} config wdio configuration object
-     * @param {Array.<Object>} capabilities list of capabilities details
-     * @param {Array.<String>} specs List of spec file paths that ran
-     */
-    // afterSession: function (config, capabilities, specs) {
-    // },
-    /**
-     * Gets executed after all workers got shut down and the process is about to exit. An error
-     * thrown in the onComplete hook will result in the test run failing.
-     * @param {object} exitCode 0 - success, 1 - fail
-     * @param {object} config wdio configuration object
-     * @param {Array.<Object>} capabilities list of capabilities details
-     * @param {<Object>} results object containing test results
-     */
-    // onComplete: function(exitCode, config, capabilities, results) {
-    // },
-    /**
-    * Gets executed when a refresh happens.
-    * @param {string} oldSessionId session ID of the old session
-    * @param {string} newSessionId session ID of the new session
-    */
-    // onReload: function(oldSessionId, newSessionId) {
-    // }
 }
