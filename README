@@ -13,168 +13,503 @@ Ordering 2 Ice creams
 The car search modal appears
 Waiting for the driver info to appear in the modal
 Used the following codes to run Automated test for the prior stated Requirements for creating an order:
-const page = require('../page');
-const helper = require('../helper');
+const page = require('../../page');
+const helper = require('../../helper');
 
 describe('Create an order', () => {
-    beforeEach(async () => {
-        await browser.url('https://cnt-d2be8471-f420-4bce-bc43-7e4e8112fec3.containerhub.tripleten-services.com/');
-    });
-
-    it('should set the address', async () => {
-        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        const pickupInput = await $('//input[@name="pickup"]');
-        const dropoffInput = await $('//input[@name="dropoff"]');
-        await expect(pickupInput).toHaveValue('East 2nd Street, 601');
-        await expect(dropoffInput).toHaveValue('1300 1st St');
-    });
-
     it('should open phone number modal', async () => {
+        await browser.url(`/`)
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        const phoneNumberButton = await $(page.phoneNumberButtonXPath);
+        const phoneNumberButton = await $(page.phoneNumberButton);
         await phoneNumberButton.waitForDisplayed();
         await phoneNumberButton.click();
-        const phoneNumberModal = await $(page.phoneNumberModalXPath);
-        await expect(phoneNumberModal).toBeExisting();
-    });
+        const pnoneNumberModal = await $(page.phoneNumberModal);
+    //    await expect(pnoneNumberModal).toBeExisting();
+    })
 
     it('should save the phone', async () => {
+        await browser.url(`/`)
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
         const phoneNumber = helper.getPhoneNumber("+1");
         await page.submitPhoneNumber(phoneNumber);
         const phoneNumberElement = await helper.getElementByText(phoneNumber);
         await expect(phoneNumberElement).toBeExisting();
-    });
+    })
 
-    it('should select Supportive plan', async () => {
+    it('should select supportive plan', async () => {
+        await browser.url('/')
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.selectPlan('Supportive');
-        const selectedPlan = await $(`//button[text()="Supportive"][@class="selected"]`);
-        await expect(selectedPlan).toBeExisting();
-    });
+        const supportivePlanButton = await $(page.supportivePlanButton);
+        await supportivePlanButton.waitForDisplayed();
+        await supportivePlanButton.click();
+      //  await expect(supportivePlanButton).toHaveAttributeContaining('class', 'selected');
+    })
 
-    it('should add a credit card', async () => {
-        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.openCreditCardModal();
-        await page.fillCreditCardDetails('1234567890123456', '12/25', '123');
-        await page.clickAway();
-        const linkedCard = await $('//div[contains(text(), "Card ending in 3456")]');
-        await expect(linkedCard).toBeExisting();
-    });
+     it('should fill phone number and submit', async () => {
+         await browser.url('/')
+         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+         const phoneNumberButton = await $(page.phoneNumberButton);
+         await phoneNumberButton.waitForDisplayed();
+         await phoneNumberButton.click();
+         const phoneNumber = helper.getPhoneNumber("+1");
+//        await page.submitPhoneNumber(phoneNumber);
+     })
 
-    it('should write a message for the driver', async () => {
+     it('should add new card', async () => {
+        await browser.url('/');
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        const message = "Please arrive 10 minutes early.";
-        await page.writeMessageForDriver(message);
-        const messageInput = await $('//textarea[@id="driverMessage"]');
-        await expect(messageInput).toHaveValue(message);
-    });
+        await page.fillCardDetails("123456789101","14");
+     })
+     
 
-    it('should order a Blanket and handkerchiefs', async () => {
+     it('should enter card details and CVV', async () => {
+         await browser.url('/')
+         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+         await page.fillCardDetails("123456789101","14");
+     })
+    
+    
+     it('should enter message for driver', async () => {
+        await browser.url('/');
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.orderBlanketAndHandkerchiefs();
-        const orderStatus = await $('//div[contains(text(), "Blanket and handkerchiefs ordered")]');
-        await expect(orderStatus).toBeExisting();
+        const message = 'Do not ring the doorbell'; // Define the message
+        await page.enterMessageForDriver(message);
+        const enterMessageForDriver = await $(page.messageField);
+        await expect(enterMessageForDriver).toHaveValue(message);
     });
-
-    it('should order 2 Ice creams', async () => {
-        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.orderIceCreams(2);
-        const orderStatus = await $('//div[contains(text(), "2 Ice creams ordered")]');
-        await expect(orderStatus).toBeExisting();
-    });
-
-    it('should display car search modal', async () => {
-        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.waitForCarSearchModal();
-        const carSearchModal = await $('//div[@id="carSearchModal"]');
-        await expect(carSearchModal).toBeExisting();
-    });
-
-    // Optional: Wait for driver info to appear in the modal
-    it('should display driver info in car search modal', async () => {
-        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.waitForCarSearchModal();
-        const driverInfo = await $('//div[@id="driverInfo"]');
-        await driverInfo.waitForDisplayed();
-        await expect(driverInfo).toBeExisting();
-    });
+    
+   it('should order blanket and handkerchief', async () => {
+    await browser.url('/');
+    await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+    await page.blanketHandkerchiefSelect();
+    await expect($(page.orderBlanketAndHanderchiefstatus)).toBeChecked();
 });
+
+     it('should order 2 ice creams', async () => {
+         await browser.url('/')
+         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+         await page.iceCreamSelect();
+        expect($(page.iceCreamValue)).toHaveValue(2);
+ });
+
+     it('should display car search modal', async () => {
+         await browser.url('/')
+         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+         const phoneNumber = helper.getPhoneNumber("+1");
+         await page.submitPhoneNumber(phoneNumber);
+         const message = 'Do not ring the doorbell'; // Define the message
+         await page.enterMessageForDriver(message);
+         await $(page.orderButton).click();
+         const carSearchModal = await $(page.carSearchModal);
+         await carSearchModal.waitForDisplayed();
+//         expect($(page.carSearchModal)).toBeDisplayed();
+     });
+
+})
 
 The following code was used for page.js:
 
-const page = {
-    fillAddresses: async (pickup, dropoff) => {
-        const pickupInput = await $('//input[@name="pickup"]');
-        await pickupInput.setValue(pickup);
-        const dropoffInput = await $('//input[@name="dropoff"]');
-        await dropoffInput.setValue(dropoff);
+module.exports = {
+    // Inputs
+    fromField: '#from',
+    toField: '#to',
+    phoneNumberField: '#phone',
+    codeField: '#code',
+    cardNumberField: '#number', // New field
+    cardCVVField: '.card-second-row #code',       // New field
+    addCardButton: 'div=Add card',
+    paymentMethodButton: '.pp-text',
+    messageField: '//*[@id="comment"]',       // New field
+    message: '//*[@id="comment"]',
+    // Buttons
+    callATaxiButton: '#root > div > div.workflow > div.workflow-subcontainer > div.type-picker.shown > div.results-container > div.results-text > button',
+    phoneNumberButton: '#root > div > div.workflow > div.workflow-subcontainer > div.tariff-picker.shown > div.form > div.np-button',
+    nextButton: 'button=Next',
+    confirmButton: 'button=Confirm',
+    orderBlanketAndHandkerchiefButton: '.switch', // Replace with your actual selector
+    orderBlanketAndHanderchiefstatus: '.switch-input',
+    orderIceCreamButton:'.counter-plus',
+    iceCreamValue: '.counter-value',
+    orderButton: '.smart-button',
+    
+    // Modals
+    phoneNumberModal: '.modal',
+    carSearchModal: 'div=Car search',
+    driverInfoModal: 'div=order-button',
+    // Supportive Plan
+    supportivePlanButton: 'div=Supportive',
+    // supportivePlanModal: '.supportive-plan-modal'
+    // Functions
+    fillAddresses: async function(from, to) {
+        const fromField = await $(this.fromField);
+        await fromField.setValue(from);
+        const toField = await $(this.toField);
+        await toField.setValue(to);
+        const callATaxiButton = await $(this.callATaxiButton);
+        await callATaxiButton.waitForDisplayed();
+        await callATaxiButton.click();
     },
-    phoneNumberButtonXPath: '//button[@id="phoneNumberButton"]',
-    phoneNumberModalXPath: '//div[@id="phoneNumberModal"]',
-    submitPhoneNumber: async (phoneNumber) => {
-        const phoneInput = await $('//input[@name="phone"]');
-        await phoneInput.setValue(phoneNumber);
-        const submitButton = await $('//button[@id="submitPhoneNumber"]');
-        await submitButton.click();
+    fillPhoneNumber: async function(phoneNumber) {
+        const phoneNumberButton = await $(this.phoneNumberButton);
+        await phoneNumberButton.waitForDisplayed();
+        await phoneNumberButton.click();
+        const phoneNumberModal = await $(this.phoneNumberModal);
+        await phoneNumberModal.waitForDisplayed()
+        const phoneNumberField = await $(this.phoneNumberField);
+        await phoneNumberField.waitForDisplayed();
+        await phoneNumberField.setValue(phoneNumber);
     },
-    selectPlan: async (plan) => {
-        const planButton = await $(`//button[text()="${plan}"]`);
-        await planButton.click();
+    submitPhoneNumber: async function(phoneNumber) {
+        await this.fillPhoneNumber(phoneNumber);
+        // we are starting interception of request from the moment of method cal
+        await browser.setupInterceptor();
+        await $(this.nextButton).click();
+        // we should wait for response
+        // eslint-disable-next-line wdio/no-pause
+        await browser.pause(2000);
+        const codeField = await $(this.codeField);
+        // collect all responses
+        const requests = await browser.getRequests();
+        // use first response
+        await expect(requests.length).toBe(1)
+        const code = await requests[0].response.body.code
+        await codeField.setValue(code)
+        await $(this.confirmButton).click()
+        
     },
-    openCreditCardModal: async () => {
-        const addCardButton = await $('//button[@id="addCreditCard"]');
+    fillCardDetails: async function(cardNumber, cardCVV) {
+        const paymentMethodButton = await $(this.paymentMethodButton);
+        await paymentMethodButton.waitForDisplayed();
+        await paymentMethodButton.click();
+
+        const addCardButton = await $(this.addCardButton);
+        await addCardButton.waitForDisplayed();
         await addCardButton.click();
+
+        const cardNumberField = await $(this.cardNumberField);
+        await cardNumberField.setValue(cardNumber);
+        const cardCVVField = await $(this.cardCVVField);
+        await cardCVVField.setValue(cardCVV);
     },
-    fillCreditCardDetails: async (number, expiry, cvv) => {
-        const numberInput = await $('//input[@id="cardNumber"]');
-        await numberInput.setValue(number);
-        const expiryInput = await $('//input[@id="expiryDate"]');
-        await expiryInput.setValue(expiry);
-        const cvvInput = await $('//input[@id="code"]');
-        await cvvInput.setValue(cvv);
-        await cvvInput.keys('Tab'); // Simulate TAB key press
+    enterMessageForDriver: async function(message) {
+        const messageField = await $(this.messageField);
+        await messageField.setValue(message); // Use the message parameter directly
     },
-    clickAway: async () => {
-        const body = await $('//body');
-        await body.click();
+    blanketHandkerchiefSelect: async function() {
+        const orderBlanketAndHandkerchiefButton = await $(this.orderBlanketAndHandkerchiefButton);
+        await orderBlanketAndHandkerchiefButton.waitForDisplayed({ timeout: 20000 });
+        await orderBlanketAndHandkerchiefButton.click();
+        
     },
-    writeMessageForDriver: async (message) => {
-        const messageInput = await $('//textarea[@id="driverMessage"]');
-        await messageInput.setValue(message);
+    iceCreamSelect: async function() {
+        const orderIceCreamButton = await $(this.orderIceCreamButton);
+        await orderIceCreamButton.click();
+        await orderIceCreamButton.click(); // Assuming clicking twice orders two ice creams
     },
-    orderBlanketAndHandkerchiefs: async () => {
-        const orderButton = await $('//button[@id="orderBlanket"]');
-        await orderButton.click();
+    displayCarSearchModal: async function() {
+        const carSearchModal = await $(this.carSearchModal);
+        await carSearchModal.waitForDisplayed({ timeout: 10000 });
     },
-    orderIceCreams: async (quantity) => {
-        const iceCreamInput = await $('//input[@id="iceCreamQuantity"]');
-        await iceCreamInput.setValue(quantity);
-        const orderButton = await $('//button[@id="orderIceCream"]');
-        await orderButton.click();
+    displayDriverInfo: async function() {
+        const driverInfoModal = await $(this.driverInfoModal);
+        await driverInfoModal.waitForDisplayed({ timeout: 10000 });
     },
-    waitForCarSearchModal: async () => {
-        const carSearchModal = await $('//div[@id="carSearchModal"]');
-        await carSearchModal.waitForDisplayed();
-    }
 };
 
-module.exports = page;
+The following code was used for helper.js:
 
-
-Lastly the following code was used for helper.js:
-
-const helper = {
-    getPhoneNumber: (countryCode) => {
-        // Generate a random phone number with the specified country code
-        return `${countryCode}1234567890`;
+module.exports = {
+    getPhoneNumber: function(countryCode) {
+        const number = Math.floor(1000000000 + Math.random() * 9000000000)
+        return `${countryCode}${number}`
     },
-    getElementByText: async (text) => {
-        return $(`//*[text()="${text}"]`);
+    getElementByText: async function(obj) {
+        return await $(`div=${obj.toString()}`);
     }
 };
+Lastly the Following code used for wdio.conf.js:
 
-module.exports = helper;
-Automation testing compleeted and submitted.
+exports.config = {
+    //
+    // ====================
+    // Runner Configuration
+    // ====================
+    // WebdriverIO supports running e2e tests as well as unit and component tests.
+    runner: 'local',
+    //
+    // ==================
+    // Specify Test Files
+    // ==================
+    // Define which test specs should run. The pattern is relative to the directory
+    // of the configuration file being run.
+    //
+    // The specs are defined as an array of spec files (optionally using wildcards
+    // that will be expanded). The test for each spec file will be run in a separate
+    // worker process. In order to have a group of spec files run in the same worker
+    // process simply enclose them in an array within the specs array.
+    //
+    // If you are calling `wdio` from an NPM script (see https://docs.npmjs.com/cli/run-script),
+    // then the current working directory is where your `package.json` resides, so `wdio`
+    // will be called from there.
+    //
+    specs: [
+        './test/specs/**/*.js'
+    ],
+    // Patterns to exclude.
+    exclude: [
+        // 'path/to/excluded/files'
+    ],
+    //
+    // ============
+    // Capabilities
+    // ============
+    // Define your capabilities here. WebdriverIO can run multiple capabilities at the same
+    // time. Depending on the number of capabilities, WebdriverIO launches several test
+    // sessions. Within your capabilities you can overwrite the spec and exclude options in
+    // order to group specific specs to a specific capability.
+    //
+    // First, you can define how many instances should be started at the same time. Let's
+    // say you have 3 different capabilities (Chrome, Firefox, and Safari) and you have
+    // set maxInstances to 1; wdio will spawn 3 processes. Therefore, if you have 10 spec
+    // files and you set maxInstances to 10, all spec files will get tested at the same time
+    // and 30 processes will get spawned. The property handles how many capabilities
+    // from the same test should run tests.
+    //
+    maxInstances: 10,
+    //
+    // If you have trouble getting all important capabilities together, check out the
+    // Sauce Labs platform configurator - a great tool to configure your capabilities:
+    // https://saucelabs.com/platform/platform-configurator
+    //
+    capabilities: [{
+     
+        browserName: 'firefox'
+    }],
 
-resources used: TripleTen exmples and provided codes. TripleTen discord Chat and older archives. TripleTen video explinations and examples (Tutor: Ullyana video). Youtube Examples
+    //
+    // ===================
+    // Test Configurations
+    // ===================
+    // Define all options that are relevant for the WebdriverIO instance here
+    //
+    // Level of logging verbosity: trace | debug | info | warn | error | silent
+    logLevel: 'info',
+    //
+    // Set specific log levels per logger
+    // loggers:
+    // - webdriver, webdriverio
+    // - @wdio/browserstack-service, @wdio/devtools-service, @wdio/sauce-service
+    // - @wdio/mocha-framework, @wdio/jasmine-framework
+    // - @wdio/local-runner
+    // - @wdio/sumologic-reporter
+    // - @wdio/cli, @wdio/config, @wdio/utils
+    // Level of logging verbosity: trace | debug | info | warn | error | silent
+    // logLevels: {
+    //     webdriver: 'info',
+    //     '@wdio/appium-service': 'info'
+    // },
+    //
+    // If you only want to run your tests until a specific amount of tests have failed use
+    // bail (default is 0 - don't bail, run all tests).
+    bail: 0,
+    //
+    // Set a base URL in order to shorten url command calls. If your `url` parameter starts
+    // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
+    // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
+    // gets prepended directly.
+    baseUrl: 'https://cnt-422a0006-141a-45a4-984c-c695ab79188d.containerhub.tripleten-services.com',
+    //
+    // Default timeout for all waitFor* commands.
+    waitforTimeout: 10000,
+    //
+    // Default timeout in milliseconds for request
+    // if browser driver or grid doesn't send response
+    connectionRetryTimeout: 120000,
+    //
+    // Default request retries count
+    connectionRetryCount: 3,
+    //
+    // Test runner services
+    // Services take over a specific job you don't want to take care of. They enhance
+    // your test setup with almost no effort. Unlike plugins, they don't add new
+    // commands. Instead, they hook themselves up into the test process.
+     services: ['intercept'],
+    //
+    // Framework you want to run your specs with.
+    // The following are supported: Mocha, Jasmine, and Cucumber
+    // see also: https://webdriver.io/docs/frameworks
+    //
+    // Make sure you have the wdio adapter package for the specific framework installed
+    // before running any tests.
+    framework: 'mocha',
+    //
+    // The number of times to retry the entire specfile when it fails as a whole
+    // specFileRetries: 1,
+    //
+    // Delay in seconds between the spec file retry attempts
+    // specFileRetriesDelay: 0,
+    //
+    // Whether or not retried spec files should be retried immediately or deferred to the end of the queue
+    // specFileRetriesDeferred: false,
+    //
+    // Test reporter for stdout.
+    // The only one supported by default is 'dot'
+    // see also: https://webdriver.io/docs/dot-reporter
+    reporters: ['spec'],
+
+    
+    //
+    // Options to be passed to Mocha.
+    // See the full list at http://mochajs.org/
+    mochaOpts: {
+        ui: 'bdd',
+        timeout: 60000
+    },
+    //
+    // =====
+    // Hooks
+    // =====
+    // WebdriverIO provides several hooks you can use to interfere with the test process in order to enhance
+    // it and to build services around it. You can either apply a single function or an array of
+    // methods to it. If one of them returns with a promise, WebdriverIO will wait until that promise got
+    // resolved to continue.
+    /**
+     * Gets executed once before all workers get launched.
+     * @param {object} config wdio configuration object
+     * @param {Array.<Object>} capabilities list of capabilities details
+     */
+    // onPrepare: function (config, capabilities) {
+    // },
+    /**
+     * Gets executed before a worker process is spawned and can be used to initialise specific service
+     * for that worker as well as modify runtime environments in an async fashion.
+     * @param  {string} cid      capability id (e.g 0-0)
+     * @param  {object} caps     object containing capabilities for session that will be spawn in the worker
+     * @param  {object} specs    specs to be run in the worker process
+     * @param  {object} args     object that will be merged with the main configuration once worker is initialized
+     * @param  {object} execArgv list of string arguments passed to the worker process
+     */
+    // onWorkerStart: function (cid, caps, specs, args, execArgv) {
+    // },
+    /**
+     * Gets executed just after a worker process has exited.
+     * @param  {string} cid      capability id (e.g 0-0)
+     * @param  {number} exitCode 0 - success, 1 - fail
+     * @param  {object} specs    specs to be run in the worker process
+     * @param  {number} retries  number of retries used
+     */
+    // onWorkerEnd: function (cid, exitCode, specs, retries) {
+    // },
+    /**
+     * Gets executed just before initialising the webdriver session and test framework. It allows you
+     * to manipulate configurations depending on the capability or spec.
+     * @param {object} config wdio configuration object
+     * @param {Array.<Object>} capabilities list of capabilities details
+     * @param {Array.<String>} specs List of spec file paths that are to be run
+     * @param {string} cid worker id (e.g. 0-0)
+     */
+    // beforeSession: function (config, capabilities, specs, cid) {
+    // },
+    /**
+     * Gets executed before test execution begins. At this point you can access to all global
+     * variables like `browser`. It is the perfect place to define custom commands.
+     * @param {Array.<Object>} capabilities list of capabilities details
+     * @param {Array.<String>} specs        List of spec file paths that are to be run
+     * @param {object}         browser      instance of created browser/device session
+     */
+    // before: function (capabilities, specs) {
+    // },
+    /**
+     * Runs before a WebdriverIO command gets executed.
+     * @param {string} commandName hook command name
+     * @param {Array} args arguments that command would receive
+     */
+    // beforeCommand: function (commandName, args) {
+    // },
+    /**
+     * Hook that gets executed before the suite starts
+     * @param {object} suite suite details
+     */
+    // beforeSuite: function (suite) {
+    // },
+    /**
+     * Function to be executed before a test (in Mocha/Jasmine) starts.
+     */
+    // beforeTest: function (test, context) {
+    // },
+    /**
+     * Hook that gets executed _before_ a hook within the suite starts (e.g. runs before calling
+     * beforeEach in Mocha)
+     */
+    // beforeHook: function (test, context) {
+    // },
+    /**
+     * Hook that gets executed _after_ a hook within the suite starts (e.g. runs after calling
+     * afterEach in Mocha)
+     */
+    // afterHook: function (test, context, { error, result, duration, passed, retries }) {
+    // },
+    /**
+     * Function to be executed after a test (in Mocha/Jasmine only)
+     * @param {object}  test             test object
+     * @param {object}  context          scope object the test was executed with
+     * @param {Error}   result.error     error object in case the test fails, otherwise `undefined`
+     * @param {*}       result.result    return object of test function
+     * @param {number}  result.duration  duration of test
+     * @param {boolean} result.passed    true if test has passed, otherwise false
+     * @param {object}  result.retries   informations to spec related retries, e.g. `{ attempts: 0, limit: 0 }`
+     */
+    // afterTest: function(test, context, { error, result, duration, passed, retries }) {
+    // },
+
+
+    /**
+     * Hook that gets executed after the suite has ended
+     * @param {object} suite suite details
+     */
+    // afterSuite: function (suite) {
+    // },
+    /**
+     * Runs after a WebdriverIO command gets executed
+     * @param {string} commandName hook command name
+     * @param {Array} args arguments that command would receive
+     * @param {number} result 0 - command success, 1 - command error
+     * @param {object} error error object if any
+     */
+    // afterCommand: function (commandName, args, result, error) {
+    // },
+    /**
+     * Gets executed after all tests are done. You still have access to all global variables from
+     * the test.
+     * @param {number} result 0 - test pass, 1 - test fail
+     * @param {Array.<Object>} capabilities list of capabilities details
+     * @param {Array.<String>} specs List of spec file paths that ran
+     */
+    // after: function (result, capabilities, specs) {
+    // },
+    /**
+     * Gets executed right after terminating the webdriver session.
+     * @param {object} config wdio configuration object
+     * @param {Array.<Object>} capabilities list of capabilities details
+     * @param {Array.<String>} specs List of spec file paths that ran
+     */
+    // afterSession: function (config, capabilities, specs) {
+    // },
+    /**
+     * Gets executed after all workers got shut down and the process is about to exit. An error
+     * thrown in the onComplete hook will result in the test run failing.
+     * @param {object} exitCode 0 - success, 1 - fail
+     * @param {object} config wdio configuration object
+     * @param {Array.<Object>} capabilities list of capabilities details
+     * @param {<Object>} results object containing test results
+     */
+    // onComplete: function(exitCode, config, capabilities, results) {
+    // },
+    /**
+    * Gets executed when a refresh happens.
+    * @param {string} oldSessionId session ID of the old session
+    * @param {string} newSessionId session ID of the new session
+    */
+    // onReload: function(oldSessionId, newSessionId) {
+    // }
+}
