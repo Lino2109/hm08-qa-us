@@ -9,7 +9,7 @@ describe('Create an order', () => {
         await phoneNumberButton.waitForDisplayed();
         await phoneNumberButton.click();
         const pnoneNumberModal = await $(page.phoneNumberModal);
-    //    await expect(pnoneNumberModal).toBeExisting();
+        await expect(pnoneNumberModal).toBeExisting();
     })
 
     it('should save the phone', async () => {
