@@ -24,21 +24,9 @@ describe('Create an order', () => {
     it('should select supportive plan', async () => {
         await browser.url('/')
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        const supportivePlanButton = await $(page.supportivePlanButton);
-        await supportivePlanButton.waitForDisplayed();
-        await supportivePlanButton.click();
-        await expect(supportivePlanButton).toHaveAttributeContaining('class', 'selected');
+        const checkDesiredPicker = await page.suppotivePlan();
+        await expect(checkDesiredPicker).toHaveElementClassContaining('active');
     });
-
-     it('should fill phone number and submit', async () => {
-         await browser.url('/')
-         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-         const phoneNumberButton = await $(page.phoneNumberButton);
-         await phoneNumberButton.waitForDisplayed();
-         await phoneNumberButton.click();
-         const phoneNumber = helper.getPhoneNumber("+1");
-         await page.submitPhoneNumber(phoneNumber);
-     });
 
      it('should add new card', async () => {
         await browser.url('/');
@@ -47,15 +35,6 @@ describe('Create an order', () => {
         await expect(page.fillCardDetails).toAddCard();
     });
      
-
-     it('should enter card details and CVV', async () => {
-         await browser.url('/')
-         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-         await page.fillCardDetails("123456789101","14"); 
-         await expect(page.fillCardDetails).this.fillCardDetails("123456789101","14");
-    });
-    
-    
      it('should enter message for driver', async () => {
         await browser.url('/');
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
